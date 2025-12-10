@@ -48,4 +48,21 @@ public class PostLikeService {
         return LikeResponse.of(true, likeCount);
     }
 
+    @Transactional
+    public LikeResponse unlike(Long userId, Long postId) {
+        if (!postRepository.existsById(postId)) {
+            throw new CustomException(ErrorCode.POST_NOT_FOUND);
+        }
+
+        PostLike postLike = postLikeRepository.findByUserIdAndPostId(userId, postId)
+                .orElseThrow(() -> new CustomException(ErrorCode.NOT_LIKED));
+
+        postLikeRepository.delete(postLike);
+
+        // 좋아요 갯수 확인하는 코드
+        long likeCount = postLikeRepository.countByPostId(postId);
+
+        return LikeResponse.of(false, likeCount);
+    }
+
 }

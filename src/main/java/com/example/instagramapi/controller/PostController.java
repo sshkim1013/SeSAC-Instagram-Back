@@ -97,13 +97,22 @@ public class PostController {
         return ResponseEntity.noContent().build();
     }
 
-    @PostMapping("/{postId}/likes")
+    @PostMapping("/{postId}/like")
     public ResponseEntity<ApiResponse<LikeResponse>> like(
         @PathVariable Long postId,
         @AuthenticationPrincipal CustomUserDetails userDetails
     ) {
         LikeResponse response = postLikeService.like(userDetails.getId(), postId);
         return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponse.success(response));
+    }
+
+    @DeleteMapping("/{postId}/like")
+    public ResponseEntity<ApiResponse<LikeResponse>> unlike(
+        @PathVariable Long postId,
+        @AuthenticationPrincipal CustomUserDetails userDetails
+    ) {
+        LikeResponse response = postLikeService.unlike(userDetails.getId(), postId);
+        return ResponseEntity.ok(ApiResponse.success(response));
     }
 
 }
