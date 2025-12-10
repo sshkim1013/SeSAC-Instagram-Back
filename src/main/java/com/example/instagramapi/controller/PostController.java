@@ -115,4 +115,14 @@ public class PostController {
         return ResponseEntity.ok(ApiResponse.success(response));
     }
 
+    @GetMapping("/{postId}/like")
+    public ResponseEntity<ApiResponse<LikeResponse>> getLikeStatus(
+        @PathVariable Long postId,
+        @AuthenticationPrincipal CustomUserDetails userDetails
+    ) {
+        Long userId = userDetails != null ? userDetails.getId() : null;
+        LikeResponse response = postLikeService.getLikeStatus(postId, userId);
+        return ResponseEntity.ok(ApiResponse.success(response));
+    }
+
 }
