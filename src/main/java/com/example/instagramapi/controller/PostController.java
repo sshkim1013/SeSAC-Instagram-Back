@@ -5,6 +5,10 @@ import com.example.instagramapi.dto.request.PostCreateRequest;
 import com.example.instagramapi.dto.response.ApiResponse;
 import com.example.instagramapi.dto.response.CommentResponse;
 import com.example.instagramapi.dto.response.PostResponse;
+import com.example.instagramapi.entity.Comment;
+import com.example.instagramapi.exception.CustomException;
+import com.example.instagramapi.exception.ErrorCode;
+import com.example.instagramapi.repository.CommentRepository;
 import com.example.instagramapi.security.CustomUserDetails;
 import com.example.instagramapi.service.CommentService;
 import com.example.instagramapi.service.PostService;
@@ -30,6 +34,7 @@ public class PostController {
 
     private final PostService postService;
     private final CommentService commentService;
+    private final CommentRepository commentRepository;
 
     @PostMapping
     public ResponseEntity<ApiResponse<PostResponse>> create(
@@ -80,9 +85,13 @@ public class PostController {
         return ResponseEntity.ok(ApiResponse.success(response));
     }
 
-    @Transactional
-    public void delete() {
-
+    @DeleteMapping("/{postId}/comments/{commentId}")
+    public ResponseEntity<Void> deleteComment(
+        @PathVariable Long commentId,
+        @AuthenticationPrincipal CustomUserDetails userDetails
+    ) {
+        commentService.delete(commentId, userDetails.getId());
+        return ResponseEntity.noContent().build();
     }
 
 }

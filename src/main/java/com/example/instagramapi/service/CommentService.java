@@ -55,4 +55,16 @@ public class CommentService {
                 .toList();
     }
 
+    @Transactional
+    public void delete(Long commentId, Long userId) {
+        Comment comment = commentRepository.findById(commentId)
+            .orElseThrow(() -> new CustomException(ErrorCode.COMMENT_NOT_FOUND));
+
+        if (!comment.getUser().getId().equals(userId)) {
+            throw new CustomException(ErrorCode.NOT_COMMENT_OWNER);
+        }
+
+        commentRepository.delete(comment);
+    }
+
 }
