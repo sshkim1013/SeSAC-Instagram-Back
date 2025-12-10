@@ -4,6 +4,7 @@ import com.example.instagramapi.dto.request.CommentCreateRequest;
 import com.example.instagramapi.dto.request.PostCreateRequest;
 import com.example.instagramapi.dto.response.ApiResponse;
 import com.example.instagramapi.dto.response.CommentResponse;
+import com.example.instagramapi.dto.response.LikeResponse;
 import com.example.instagramapi.dto.response.PostResponse;
 import com.example.instagramapi.entity.Comment;
 import com.example.instagramapi.exception.CustomException;
@@ -11,6 +12,7 @@ import com.example.instagramapi.exception.ErrorCode;
 import com.example.instagramapi.repository.CommentRepository;
 import com.example.instagramapi.security.CustomUserDetails;
 import com.example.instagramapi.service.CommentService;
+import com.example.instagramapi.service.PostLikeService;
 import com.example.instagramapi.service.PostService;
 import jakarta.validation.Valid;
 import java.util.List;
@@ -35,6 +37,7 @@ public class PostController {
     private final PostService postService;
     private final CommentService commentService;
     private final CommentRepository commentRepository;
+    private final PostLikeService postLikeService;
 
     @PostMapping
     public ResponseEntity<ApiResponse<PostResponse>> create(
@@ -92,6 +95,15 @@ public class PostController {
     ) {
         commentService.delete(commentId, userDetails.getId());
         return ResponseEntity.noContent().build();
+    }
+
+    @PostMapping("/{postId}/likes")
+    public ResponseEntity<ApiResponse<LikeResponse>> like(
+        @PathVariable Long postId,
+        @AuthenticationPrincipal CustomUserDetails userDetails
+    ) {
+        LikeResponse response = postLikeService.like(userDetails.getId(), postId);
+        return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponse.success(response));
     }
 
 }
