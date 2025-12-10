@@ -16,7 +16,7 @@ import lombok.NoArgsConstructor;
 @Table(name = "comments")
 @Getter
 @NoArgsConstructor
-public class Comment {
+public class Comment extends BaseTimeEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
