@@ -65,7 +65,7 @@ public class PostLikeService {
         return LikeResponse.of(false, likeCount);
     }
 
-    public LikeResponse getLikeStatus(Long postId, Long userId) {
+    public LikeResponse getLikeStatus(Long userId, Long postId) {
         if (!postRepository.existsById(postId)) {
             throw new CustomException(ErrorCode.POST_NOT_FOUND);
         }

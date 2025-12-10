@@ -6,10 +6,6 @@ import com.example.instagramapi.dto.response.ApiResponse;
 import com.example.instagramapi.dto.response.CommentResponse;
 import com.example.instagramapi.dto.response.LikeResponse;
 import com.example.instagramapi.dto.response.PostResponse;
-import com.example.instagramapi.entity.Comment;
-import com.example.instagramapi.exception.CustomException;
-import com.example.instagramapi.exception.ErrorCode;
-import com.example.instagramapi.repository.CommentRepository;
 import com.example.instagramapi.security.CustomUserDetails;
 import com.example.instagramapi.service.CommentService;
 import com.example.instagramapi.service.PostLikeService;
@@ -20,7 +16,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -36,7 +31,6 @@ public class PostController {
 
     private final PostService postService;
     private final CommentService commentService;
-    private final CommentRepository commentRepository;
     private final PostLikeService postLikeService;
 
     @PostMapping
@@ -50,8 +44,11 @@ public class PostController {
     }
 
     @GetMapping
-    public ResponseEntity<ApiResponse<List<PostResponse>>> findAll() {
-        List<PostResponse> posts = postService.findAll();
+    public ResponseEntity<ApiResponse<List<PostResponse>>> findAll(
+        @AuthenticationPrincipal CustomUserDetails userDetails
+    ) {
+        Long userId = userDetails != null ? userDetails.getId() : null;
+        List<PostResponse> posts = postService.findAll(userId);
         return ResponseEntity.ok(ApiResponse.success(posts));
     }
 
@@ -121,7 +118,7 @@ public class PostController {
         @AuthenticationPrincipal CustomUserDetails userDetails
     ) {
         Long userId = userDetails != null ? userDetails.getId() : null;
-        LikeResponse response = postLikeService.getLikeStatus(postId, userId);
+        LikeResponse response = postLikeService.getLikeStatus(userId, postId);
         return ResponseEntity.ok(ApiResponse.success(response));
     }
 

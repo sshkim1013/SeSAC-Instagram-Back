@@ -6,6 +6,8 @@ import com.example.instagramapi.entity.Post;
 import com.example.instagramapi.entity.User;
 import com.example.instagramapi.exception.CustomException;
 import com.example.instagramapi.exception.ErrorCode;
+import com.example.instagramapi.repository.CommentRepository;
+import com.example.instagramapi.repository.PostLikeRepository;
 import com.example.instagramapi.repository.PostRepository;
 import com.example.instagramapi.repository.UserRepository;
 import java.util.List;
@@ -20,6 +22,8 @@ public class PostService {
 
     private final PostRepository postRepository;
     private final UserRepository userRepository;
+    private final PostLikeRepository postLikeRepository;
+    private final CommentRepository commentRepository;
 
     @Transactional
     public PostResponse create(Long userId, PostCreateRequest request) {
@@ -38,11 +42,11 @@ public class PostService {
 
 
     // 전체 게시물
-    public List<PostResponse> findAll() {
+    public List<PostResponse> findAll(Long currentUserId) {
         List<Post> posts = postRepository.findAllWithUser();
 
         return posts.stream()
-                .map(PostResponse::from)
+                .map(post -> toPostResponseWithStats(post, currentUserId))
                 .toList();
     }
 
@@ -78,6 +82,15 @@ public class PostService {
         }
 
         postRepository.delete(foundPost);
+    }
+
+    private PostResponse toPostResponseWithStats(Post post, Long currentUserId) {
+        boolean liked = currentUserId != null
+                && postLikeRepository.existsByUserIdAndPostId(currentUserId, post.getId());
+        long likeCount = postLikeRepository.countByPostId(post.getId());
+        long commentCount = commentRepository.countByPostId(post.getId());
+
+        return PostResponse.from(post, liked, likeCount, commentCount);
     }
 
 }
