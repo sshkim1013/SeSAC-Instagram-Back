@@ -67,4 +67,17 @@ public class PostService {
                 .toList();
     }
 
+    @Transactional
+    public void delete(Long postId, Long userId) {
+        Post foundPost = postRepository.findById(postId)
+                    .orElseThrow(() -> new CustomException(ErrorCode.POST_NOT_FOUND));
+
+        // 해당 게시글의 작성자가 맞는지 검증
+        if (!foundPost.getUser().getId().equals(userId)) {
+            throw new CustomException(ErrorCode.NOT_POST_OWNER);
+        }
+
+        postRepository.delete(foundPost);
+    }
+
 }
