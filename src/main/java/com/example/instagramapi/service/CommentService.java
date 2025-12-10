@@ -10,6 +10,7 @@ import com.example.instagramapi.exception.ErrorCode;
 import com.example.instagramapi.repository.CommentRepository;
 import com.example.instagramapi.repository.PostRepository;
 import com.example.instagramapi.repository.UserRepository;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -44,6 +45,14 @@ public class CommentService {
         return CommentResponse.from(comment);
     }
 
+    public List<CommentResponse> findByPostId(Long postId) {
+        if (!postRepository.existsById(postId)) {
+            throw new CustomException(ErrorCode.POST_NOT_FOUND);
+        }
 
+        return commentRepository.findByPostIdWithUser(postId).stream()
+                .map(CommentResponse::from)
+                .toList();
+    }
 
 }
