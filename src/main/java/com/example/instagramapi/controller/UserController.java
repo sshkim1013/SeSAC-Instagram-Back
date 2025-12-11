@@ -2,10 +2,12 @@ package com.example.instagramapi.controller;
 
 import com.example.instagramapi.dto.request.ProfileUpdateRequest;
 import com.example.instagramapi.dto.response.ApiResponse;
+import com.example.instagramapi.dto.response.FollowResponse;
 import com.example.instagramapi.dto.response.PostResponse;
 import com.example.instagramapi.dto.response.UserProfileResponse;
 import com.example.instagramapi.dto.response.UserResponse;
 import com.example.instagramapi.security.CustomUserDetails;
+import com.example.instagramapi.service.FollowService;
 import com.example.instagramapi.service.PostService;
 import com.example.instagramapi.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -26,7 +28,7 @@ public class UserController {
 
     private final UserService userService;
     private final PostService postService;
-    // TODO: PostService, FollowService 추가 후 주입
+    private final FollowService followService;
 
     @Operation(summary = "프로필 조회")
     @GetMapping("/{username}")
@@ -58,6 +60,15 @@ public class UserController {
         @AuthenticationPrincipal CustomUserDetails userDetails
     ) {
         List<PostResponse> response = postService.findByUsername(username, userDetails.getId());
+        return ResponseEntity.ok(ApiResponse.success(response));
+    }
+
+    @PostMapping("/{username}/follow")
+    public ResponseEntity<ApiResponse<FollowResponse>> follow(
+        @PathVariable String username,
+        @AuthenticationPrincipal CustomUserDetails userDetails
+    ) {
+        FollowResponse response = followService.follow(username, userDetails.getId());
         return ResponseEntity.ok(ApiResponse.success(response));
     }
 
