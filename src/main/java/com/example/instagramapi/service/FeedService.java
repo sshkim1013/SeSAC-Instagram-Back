@@ -33,7 +33,7 @@ public class FeedService {
         return PostResponse.from(post, liked, likeCount, commentCount);
     }
 
-    // 피드 -> 내가 팔로우하는 살마들의 게시물 + 내 게시물
+    // 피드 -> 내가 팔로우하는 사람들의 게시물 + 내 게시물
     public SliceResponse<PostResponse> getFeed(Long userId, Pageable pageable) {
         // 팔로잉하는 사람 목록
         List<Long> followingIds = followRepository.findFollowingIdByFollowerId(userId);
@@ -43,6 +43,16 @@ public class FeedService {
 
         // 게시물 조회(페이징)
         Slice<Post> posts = postRepository.findByUserIdsWithUserPaging(followingIds, pageable);
+
+        List<PostResponse> content = posts.getContent().stream()
+                .map(post -> toPostResponseWithStats(post, userId))
+                .toList();
+
+        return SliceResponse.from(posts, content);
+    }
+
+    public SliceResponse<PostResponse> getExplore(Long userId, Pageable pageable) {
+        Slice<Post> posts = postRepository.findAllWithUserPaging(pageable);
 
         List<PostResponse> content = posts.getContent().stream()
                 .map(post -> toPostResponseWithStats(post, userId))

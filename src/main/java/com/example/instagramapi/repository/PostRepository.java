@@ -37,7 +37,7 @@ public interface PostRepository extends JpaRepository<Post, Long> {
 
     // 탐색
     @Query("SELECT p FROM Post p JOIN FETCH p.user ORDER BY p.createdAt DESC")
-    Slice<Post> findAllWithUserPaging();
+    Slice<Post> findAllWithUserPaging(Pageable pageable);
 
     // 피드(내 게시물 + 팔로잉 게시물)
     @Query("SELECT p FROM Post p JOIN FETCH p.user WHERE p.user.id IN :userIds ORDER BY p.createdAt DESC")

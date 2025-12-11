@@ -33,5 +33,17 @@ public class FeedController {
         return ResponseEntity.ok(ApiResponse.success(response));
     }
 
+    @GetMapping("/explore")
+    public ResponseEntity<ApiResponse<SliceResponse<PostResponse>>> getExplore(
+        @AuthenticationPrincipal CustomUserDetails userDetails,
+        @RequestParam int page,
+        @RequestParam int size
+    ) {
+        Pageable pageable = PageRequest.of(page, size);
+        SliceResponse<PostResponse> response =
+                feedService.getExplore(userDetails.getId(), pageable);
+
+        return ResponseEntity.ok(ApiResponse.success(response));
+    }
 
 }
