@@ -8,6 +8,10 @@ import org.springframework.http.HttpStatus;
 @RequiredArgsConstructor
 public enum ErrorCode {
 
+    // OAuth
+    OAUTH_TOKEN_FAILED(HttpStatus.UNAUTHORIZED, "OAUTH_TOKEN_FAILED", "토큰 발행 실패"),
+    OAUTH_USER_INFO_FAILED(HttpStatus.UNAUTHORIZED, "OAUTH_TOKEN_FAILED", "소셜 유저 정보 조회 실패"),
+
     // Auth
     DUPLICATE_USERNAME(HttpStatus.CONFLICT, "DUPLICATE_USERNAME", "이미 사용 중인 사용자명입니다"),
     DUPLICATE_EMAIL(HttpStatus.CONFLICT, "DUPLICATE_EMAIL", "이미 사용 중인 이메일입니다"),
@@ -46,4 +50,5 @@ public enum ErrorCode {
     private final HttpStatus status;
     private final String code;
     private final String message;
+
 }
