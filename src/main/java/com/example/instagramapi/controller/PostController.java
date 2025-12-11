@@ -52,18 +52,21 @@ public class PostController {
         return ResponseEntity.ok(ApiResponse.success(posts));
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<ApiResponse<PostResponse>> findById(@PathVariable Long id) {
-        PostResponse response = postService.findById(id);
+    @GetMapping("/{postId}")
+    public ResponseEntity<ApiResponse<PostResponse>> findById(
+        @PathVariable Long postId,
+        @AuthenticationPrincipal CustomUserDetails userDetails
+    ) {
+        PostResponse response = postService.findById(postId, userDetails.getId());
         return ResponseEntity.ok(ApiResponse.success(response));
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/{postId}")
     public ResponseEntity<Void> delete(
-        @PathVariable Long id,
+        @PathVariable Long postId,
         @AuthenticationPrincipal CustomUserDetails userDetails
     ) {
-        postService.delete(id, userDetails.getId());
+        postService.delete(postId, userDetails.getId());
         return ResponseEntity.noContent().build();
     }
 
