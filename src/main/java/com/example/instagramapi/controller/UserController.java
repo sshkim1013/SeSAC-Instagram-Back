@@ -72,6 +72,15 @@ public class UserController {
         return ResponseEntity.ok(ApiResponse.success(response));
     }
 
+    @DeleteMapping("/{username}/follow")
+    public ResponseEntity<ApiResponse<FollowResponse>> unfollow(
+        @PathVariable String username,
+        @AuthenticationPrincipal CustomUserDetails userDetails
+    ) {
+        FollowResponse response = followService.unfollow(username, userDetails.getId());
+        return ResponseEntity.ok(ApiResponse.success(response));
+    }
+
     // TODO: 팔로워 목록 조회 API 추가
     // GET /api/users/{username}/followers
 
